@@ -46,10 +46,8 @@ Mark the robot as connected to the network.
     :Failure:
         :Status: 400, if the robot fails to provide its id
         :Status: 403, if a robot with the same id has connected
-        :Content-Type: ``application/json``
-        :Fields:
-            :reason: The reason why the connection failed.
-            :token: An empty string.
+        :Content-Type: ``text/plain``
+
 
 .. _disconnect:
 
@@ -84,7 +82,8 @@ Each message will only be returned once by this endpoint.
         :Status: 200
         :Content-Type: ``application/json``
         :Fields:
-            :messages: A list of JSON serialized messages, which can be empty. It can always be correctly deserialized with :meth:`~crh_botnet.message.Message.from_json()`.
+            :messages: A list of JSON serialized messages in arbitrary order and can be empty. It can always be correctly deserialized with :meth:`~crh_botnet.message.Message.from_json()`.
+            :robots: A list of connected robots' IDs, including the requester's, in arbitrary order.
     :Failure:
         :Status: 401, the robot fails to provide a valid authentication token.
         :Content-Type: ``text/plain``

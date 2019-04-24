@@ -57,6 +57,7 @@ class Robot:
         if asyncio.iscoroutinefunction(self._setup):
             print('Setup function must not be async')
             sys.exit(1)
+        self.network.connect()
         self._run_setup()
         
         self._on_message = self.__globals.get('on_message', lambda m: None)
@@ -103,8 +104,7 @@ class Robot:
                 return
             try:
                 msgs = await self.network.coro.poll()
-                for msg_id in msgs:
-                    msg = await self.network.coro.retrieve(msg_id)
+                for msg in msgs:
                     if is_handler_async:
                         await self._on_message(msg)
                     else:
@@ -115,6 +115,7 @@ class Robot:
                 self.shutdown(1)
             except:
                 print('Error polling')
+                print(traceback.format_exc(),file=sys.stderr)
                 pass  # TODO: Handle specific connection errors
             finally:
                 await asyncio.sleep(0.2)
@@ -195,12 +196,13 @@ class Robot:
         for task in asyncio.Task.all_tasks():
             if task!=current:
                 task.cancel()
-            
         try:
             if asyncio.iscoroutinefunction(self._on_shutdown):
                 await self._on_shutdown()
             else:
                 self._on_shutdown()
+            if self.network.is_connected:
+                await self.network.coro.disconnect()
         except:
             sys.stdout.flush()
             exc_type, exc_obj, tb = sys.exc_info()

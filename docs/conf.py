@@ -55,7 +55,9 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 #
 html_theme = 'alabaster'
 html_theme_options = {
-	'canonical_url':'docs.jerrywang.website/crh-botnet/'
+	'show_powered_by':False,
+	'canonical_url':'docs.jerrywang.website/crh-botnet/',
+	'analytics_id':'UA-115911413-2'
 }
 html_baseurl='https://docs.jerrywang.website/crh-botnet/'
 
@@ -67,4 +69,4 @@ html_static_path = ['_static','_static/custom.css']
 intersphinx_mapping = {'python': ('https://docs.python.org/3', None)}
 
 def setup(app):
-	app.add_stylesheet('_static/custom.css')
+	app.add_stylesheet('custom.css')

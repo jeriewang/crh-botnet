@@ -1,0 +1,7 @@
+#!/bin/bash
+
+cd "${0%/*}"
+rm -r _build
+make html
+rsync -rauvh . root@jerrywang.website:/srv/docs/crh-botnet/
+#ssh root@jerrywang.website "rsync -rvau /srv/notes/CS570HO/Journal/_static/ /srv/notes/_static/"
