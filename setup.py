@@ -9,6 +9,7 @@ setup(
         author='Jerry Wang',
         author_email='yrrejkk@gmail.com',
         description='A Robot Networking Library',
+        python_requires='>=3.6',
         install_requires=[
             'aiohttp',
             'requests',

@@ -27,7 +27,7 @@ class Robot:
         self._exit_code=0
         self._ignore_exceptions=False
         
-    def run(self, namespace: dict, looping_interval: float = 0.05, ignore_exceptions=False):
+    def run(self, namespace: dict, looping_interval: float = 0.05, ignore_exceptions=False, offline=False):
         """
         Runs the main event loop. This function must be called only once.
         It should be placed on the last line of the robot's script because
@@ -47,6 +47,9 @@ class Robot:
         It is dangerous to enable and use only if you are confident that your\
         program can recover from unhandled exceptions. Regardless of this value,\
         KeyboardInterrupt (ctrl-c) will always shutdown the robot.
+        :param bool offline: If the robot should operate offline. That is, if \
+        offline is set to True, the robot will not attempt to connect to the \
+        network.
         """
         
         self.__globals = namespace
@@ -57,7 +60,8 @@ class Robot:
         if asyncio.iscoroutinefunction(self._setup):
             print('Setup function must not be async')
             sys.exit(1)
-        self.network.connect()
+        if not offline:
+            self.network.connect()
         self._run_setup()
         
         self._on_message = self.__globals.get('on_message', lambda m: None)

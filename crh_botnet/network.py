@@ -1,4 +1,4 @@
-import asyncio, aiohttp, sys, requests
+import asyncio, aiohttp, sys, requests,re
 from .message import Message
 from typing import Union, List
 from types import FunctionType
@@ -102,8 +102,10 @@ class RobotNetwork:
         :param str addr: The address of the central server.
         :return: None
         """
-        
-        cls.SERVER_ADDR = addr
+        if re.match(r'https?://.+',addr):
+            cls.SERVER_ADDR = addr
+        else:
+            cls.SERVER_ADDR='http://'+addr
 
 
 class AsyncMethodsWrapper:
