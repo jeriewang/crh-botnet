@@ -8,5 +8,10 @@ setup(
         license='MIT',
         author='Jerry Wang',
         author_email='yrrejkk@gmail.com',
-        description='A Robot Networking Library'
+        description='A Robot Networking Library',
+        install_requires=[
+            'aiohttp',
+            'requests',
+            'flask'
+        ]
 )
