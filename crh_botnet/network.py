@@ -1,7 +1,8 @@
-import asyncio, aiohttp, sys,requests
+import asyncio, aiohttp, sys, requests
 from .message import Message
 from typing import Union, List
 from types import FunctionType
+
 
 class RobotNetwork:
     """
@@ -10,7 +11,7 @@ class RobotNetwork:
     or to broadcast a message to every single robot in the network.
     """
     
-    SERVER_ADDR='http://localhost:5003'
+    SERVER_ADDR = 'http://localhost:5003'
     
     def __init__(self, robot):
         """
@@ -18,14 +19,14 @@ class RobotNetwork:
         """
         self._robot = robot
         self._is_connected = asyncio.Event()
-        self.coro=AsyncMethodsWrapper(self)
-        self.connected_robots=[]
-        self.token=None
+        self.coro = AsyncMethodsWrapper(self)
+        self.connected_robots = []
+        self.token = None
     
     @property
     def is_connected(self):
         return self._is_connected.is_set()
-
+    
     def connect(self):
         """
         Connects to the network.
@@ -35,21 +36,20 @@ class RobotNetwork:
         
         # This function cannot be async because it is called before the event
         # loop is running.
-        r=requests.post(f'{self.SERVER_ADDR}/api/connect',json={'id':self._robot.id})
+        r = requests.post(f'{self.SERVER_ADDR}/api/connect', json={'id': self._robot.id})
         r.raise_for_status()
-        self.token=r.json()['token']
-        #print(self.token)
+        self.token = r.json()['token']
+        # print(self.token)
         self._is_connected.set()
-        
     
-    
-    def send(self, msg: Message, recipient: int, callback=None):
+    def send(self, msg, recipient, callback=None):
         """
         Schedule a message to be sent. Note that this does not send
         out the message immediately. Rather, the message will be sent
         when the event loop is idle (while awaiting something).
         
-        :param Message msg: The message for sending
+        :param  msg: The message for sending
+        :type msg: str or Message
         :param int recipient: The ID of the recipient.
         :param callback: A callback function that takes a single argument: the \
         :class:`Message` object sent. Defaults to None.
@@ -78,32 +78,31 @@ class RobotNetwork:
         
         fut.add_done_callback(cb)
     
-
-    def broadcast(self, msg: Message):
+    def broadcast(self, msg):
         """
         Broadcast a message to the entire robot network.
         
-        :param msg: A :class:`Message` object for broadcasting
+        :param msg: A message
+        :type msg: str or Message
         :return: None
         """
         asyncio.ensure_future(self.coro.broadcast(msg))
-    
     
     def disconnect(self):
         """
         Disconnect from the network
         :return:
         """
-        r = requests.post(f'{self.SERVER_ADDR}/api/disconnect', headers={'Authorization':'Token '+self.token})
+        r = requests.post(f'{self.SERVER_ADDR}/api/disconnect', headers={'Authorization': 'Token ' + self.token})
         r.raise_for_status()
-
+    
     @classmethod
     def set_server_address(cls, addr):
         """
         :param str addr: The address of the central server.
         :return: None
         """
-    
+        
         cls.SERVER_ADDR = addr
 
 
@@ -125,10 +124,10 @@ class AsyncMethodsWrapper:
         if not self._session:
             await self._create_session()
         
-        res=await self._session.get(self._network.SERVER_ADDR+'/api/poll')
-        obj=await res.json()
-        self._network.connected_robots=obj['robots']
-        ret=[]
+        res = await self._session.get(self._network.SERVER_ADDR + '/api/poll')
+        obj = await res.json()
+        self._network.connected_robots = obj['robots']
+        ret = []
         for m in obj['messages']:
             ret.append(Message.from_dict(m))
         return ret
@@ -146,12 +145,12 @@ class AsyncMethodsWrapper:
         if not self._session:
             await self._create_session()
         
-        if isinstance(msg,str):
-            msg=Message(msg)
-        assert isinstance(msg,Message)
+        if isinstance(msg, str):
+            msg = Message(msg)
+        assert isinstance(msg, Message)
         msg.set_recipient(recipient)
         msg.set_sender(self._network._robot.id)
-        await self._session.put(self._network.SERVER_ADDR+'/api/send',json=msg.to_dict())
+        await self._session.put(self._network.SERVER_ADDR + '/api/send', json=msg.to_dict())
         return msg
     
     async def broadcast(self, msg):
@@ -164,13 +163,13 @@ class AsyncMethodsWrapper:
         """
         if not self._session:
             await self._create_session()
-            
-        if isinstance(msg,str):
-            msg=Message(msg)
-        assert isinstance(msg,Message)
+        
+        if isinstance(msg, str):
+            msg = Message(msg)
+        assert isinstance(msg, Message)
         msg.set_recipient(-1)
         msg.set_sender(self._network._robot.id)
-        await self._session.put(self._network.SERVER_ADDR+'/api/send',json=msg.to_dict())
+        await self._session.put(self._network.SERVER_ADDR + '/api/send', json=msg.to_dict())
         return msg
     
     async def disconnect(self):
@@ -181,7 +180,7 @@ class AsyncMethodsWrapper:
         """
         if not self._session:
             await self._create_session()
-        await self._session.post(self._network.SERVER_ADDR+'/api/disconnect')
+        await self._session.post(self._network.SERVER_ADDR + '/api/disconnect')
     
     async def retrieve(self, msg_id: int):
         """
