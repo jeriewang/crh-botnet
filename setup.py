@@ -2,9 +2,9 @@ from setuptools import setup
 
 setup(
         name='crh-botnet',
-        version='0.0.1',
+        version='0.0.3',
         packages=['crh_botnet','crh_botnet.server'],
-        url='https://github.com/pkqxdd/crh-botnet',
+        url='https://docs.jerrywang.website/crh-botnet/',
         license='MIT',
         author='Jerry Wang',
         author_email='yrrejkk@gmail.com',
@@ -14,5 +14,6 @@ setup(
             'aiohttp',
             'requests',
             'flask'
-        ]
+        ],
+        long_description=open('README.md').read()
 )

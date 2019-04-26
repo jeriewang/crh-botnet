@@ -10,6 +10,12 @@ Clone or download the repository, then
 python3.7 setup.py install
 ```
 
+You can also install from pip
+
+```bash
+python3.7 -m pip install crh-botnet
+```
+
 ## Running The Server
 
 You can run the development server by

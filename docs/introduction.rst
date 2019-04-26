@@ -63,7 +63,8 @@ They default to do nothing if not defined.
     This function will be called exactly once,
     after connecting to the robot network. and before the first execution
     of :func:`loop`. All variables defined inside :func:`setup()`
-    will be injected back to the global namespace, which makes it more or less
+    will be injected back to the global namespace. Unlike other collected
+    functions, this function cannot be a :ref:`coroutine <coroutine>`.
 
 .. function:: loop()
 
@@ -84,10 +85,10 @@ They default to do nothing if not defined.
                 await sleep(0.5)
             c+=1
 
-    For the async version, the loop is called as many times as possible
+    You can set the looping_interval to be 0, in that case,
+    the loop is called as many times as possible
     (2007584 times per second, tested on a Macbook Pro),
     and it is your responsibility to call :func:`~asyncio.sleep()` if desired.
-    The :func:`~Robot.set_looping_interval` has no effect on the async version.
     For your convenience, the sleep function is imported at the top level of
     :mod:`crh_botnet` and is included when you execute
     :code:`from crh_botnet import *`.
@@ -105,6 +106,12 @@ They default to do nothing if not defined.
 
 .. function:: on_shutdown()
 
+    This function is called during the shutdown sequence, before the robot
+    disconnects from the network. You can use it to perform some clean up
+    or send a last second goodbye message to another beloved robot (which
+    you shouldn't have to because they can see if you are offline). It can be
+    either a :ref:`coroutine <coroutine>` function or a regular function.
+
 .. _async_funcs:
 
 Async Flavored Functions
@@ -114,8 +121,8 @@ All collected functions can be optionally marked as a :ref:`coroutine <coroutine
 function with the special keyword :keyword:`async` before the function definition.
 
 
-What Is :code:`await sleep`?
-----------------------------
+What Is :code:`await`?
+----------------------
 
 When your program hits a line with :keyword:`await`, the control flow of the
 program is transferred back to the event loop, which is called a context switch.
@@ -127,7 +134,6 @@ that your program gives up the control of the CPU for that particular time
 period. For example, if you have this function
 
 .. code-block::
-    :linenos:
     :emphasize-lines: 4
 
     async def loop():
@@ -145,3 +151,6 @@ loop, which is managed by this library. The library will use the time to check
 whether a new message has arrived (and if so, invoke the
 :func:`on_message` handler) , send out messages scheduled
 with :func:`~crh_botnet.network.RobotNetwork.send()`, etc.
+
+If you are still not sure how to use this package, checkout some
+:ref:`examples <examples>`.
