@@ -25,13 +25,13 @@ You can install the package by simply using your favorite package manager, ``pip
 
 Supports Python3.7+
 
-.. code-block::bash
+.. code-block:: bash
 
     python3.7 -m pip install crh-botnet
 
 You can run the server by
 
-.. code-block::bash
+.. code-block:: bash
 
     python3.7 -m crh_botnet.server
 
