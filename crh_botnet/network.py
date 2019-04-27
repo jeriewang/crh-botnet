@@ -25,6 +25,10 @@ class RobotNetwork:
     
     @property
     def is_connected(self):
+        """
+        :return: Whether the robot is connected to the network
+        :rtype: bool
+        """
         return self._is_connected.is_set()
     
     def connect(self):
@@ -97,18 +101,27 @@ class RobotNetwork:
         r.raise_for_status()
     
     @classmethod
-    def set_server_address(cls, addr):
+    def set_server_address(cls, address):
         """
-        :param str addr: The address of the central server.
+        Set the address to the central server. The address is in
+        format ``proto://addr:port``.
+        The protocol is assumed to be http if left blank.
+        
+        :param str address: The address of the central server.
         :return: None
         """
-        if re.match(r'https?://.+',addr):
-            cls.SERVER_ADDR = addr
+        if re.match(r'https?://.+', address):
+            cls.SERVER_ADDR = address
         else:
-            cls.SERVER_ADDR='http://'+addr
+            cls.SERVER_ADDR='http://' + address
 
 
 class AsyncMethodsWrapper:
+    """
+    This class exists purely for the purpose of scoping. All methods defined
+    in this class are :ref:`coroutines <coroutine>`.
+    """
+    
     def __init__(self, network):
         """
         :param RobotNetwork network: The network

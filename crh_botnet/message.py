@@ -10,7 +10,7 @@ class Message:
     
     def __init__(self, msg: str):
         """
-        :param msg: A string for sending
+        :param msg: A string for sending. It is set to be the message's content.
         """
         self.content = msg
         "The message content, :class:`str`"
@@ -122,7 +122,8 @@ class Message:
     
     def validate(self):
         """
-        Check if the message is valid
+        Check if the message is valid.
+        
         :rtype: bool
         """
         return self.recipient is not None and self.sender is not None
