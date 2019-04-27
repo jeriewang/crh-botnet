@@ -7,6 +7,7 @@ class Robot:
     
     def __init__(self):
         self.network = RobotNetwork(self)
+        self.id = None
     
     def run(self, namespace: dict, id:int=None, looping_interval: float = 0.05, ignore_exceptions=False, offline=False):
         """
