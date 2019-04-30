@@ -57,7 +57,12 @@ html_theme = 'alabaster'
 html_theme_options = {
 	'show_powered_by':False,
 	'canonical_url':'docs.jerrywang.website/crh-botnet/',
-	'analytics_id':'UA-115911413-2'
+	'analytics_id':'UA-115911413-2',
+	'github_user':'pkqxdd',
+	'github_repo': 'crh-botnet',
+	'github_button':'true',
+	'github_type':'star',
+	'github_count':'false'
 }
 html_baseurl='https://docs.jerrywang.website/crh-botnet/'
 
