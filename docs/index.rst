@@ -29,6 +29,14 @@ Supports Python3.7+
 
     python3.7 -m pip install crh-botnet
 
+Or from source
+
+.. code-block:: bash
+
+    git clone https://github.com/pkqxdd/crh-botnet.git
+    cd crh-botnet
+    python3.7 setup.py install
+
 Running The Server
 ==================
 
