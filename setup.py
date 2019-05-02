@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
         name='crh-botnet',
-        version='0.0.4',
+        version='0.0.6',
         packages=['crh_botnet','crh_botnet.server'],
         url='https://docs.jerrywang.website/crh-botnet/',
         license='MIT',

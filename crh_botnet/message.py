@@ -129,13 +129,16 @@ class Message:
         return self.recipient is not None and self.sender is not None
     
     def __eq__(self, other):
-        if not isinstance(other, Message):
-            raise TypeError("A message cannot be compared with a %s" % type(other))
+        if isinstance(other, Message):
+           return self.content == other.content and \
+           self.sender == other.sender and \
+           self.time_created == other.time_created and\
+           self.recipient == other.recipient
         
-        return self.content == other.content and \
-               self.sender == other.sender and \
-               self.time_created == other.time_created and\
-               self.recipient == other.recipient
+        if isinstance(other,str):
+            return self.content==other
+        
+        raise TypeError("A message cannot be compared with type %s"%type(other))
     
     def __str__(self):
         return self.content
