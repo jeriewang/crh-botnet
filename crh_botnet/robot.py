@@ -9,7 +9,7 @@ class Robot:
         self.network = RobotNetwork(self)
         self.id = None
     
-    def run(self, namespace: dict, id:int=None, looping_interval: float = 0.05, ignore_exceptions=False, offline=False):
+    def run(self, namespace: dict, id:int=None, looping_interval: float = 0.05, ignore_exceptions=False, offline=False, debug=False):
         """
         Runs the main event loop. This function must be called only once.
         It should be placed on the last line of the robot's script because
@@ -35,6 +35,8 @@ class Robot:
         :param bool offline: Whether the robot should operate offline. That is,\
         if offline is set to True, the robot will not attempt to connect to the \
         network.
+        :param bool debug: Whether to enable debugging mode or not, default to \
+        False.
         """
         if offline:
             self.id=0
@@ -54,6 +56,7 @@ class Robot:
         self._should_stop = asyncio.Event()
         self._exit_code = 0
         self._ignore_exceptions = False
+        self._debug=debug
         
         self.__globals = namespace
         self._looping_interval = looping_interval
@@ -79,11 +82,11 @@ class Robot:
             asyncio.ensure_future(self._run_loop_async())
         else:
             self._event_loop.call_soon(self._run_loop)
-            
-        asyncio.ensure_future(self._poll())
+        if not offline:
+            asyncio.ensure_future(self._poll())
         
         try:
-            self._event_loop.set_debug(True)
+            self._event_loop.set_debug(self._debug)
             self._event_loop.run_forever()
         finally:
             try:
@@ -134,8 +137,12 @@ class Robot:
             except KeyboardInterrupt:
                 self.shutdown(1)
             except:
-                print('Error Polling',file=sys.stderr)
-                pass  # TODO: Handle specific connection errors
+                if self._debug:
+                    print('Error polling:',file=sys.stderr)
+                    print(traceback.format_exc(),file=sys.stderr)
+                else:
+                    print('Error Polling',file=sys.stderr)
+                # TODO: Handle specific connection errors
             finally:
                 await asyncio.sleep(0.2)
     
