@@ -29,7 +29,7 @@ Supports Python3.7+
 
     python3.7 -m pip install crh-botnet
 
-Or from source
+or from source
 
 .. code-block:: bash
 
@@ -52,5 +52,4 @@ You can also change the port and/or the address you are listening to
 
     python3.7 -m crh_botnet.server -h 127.0.0.1 -p 8000
 
-The default host is :code:`0.0.0.0` and the default port is :code:`5003`
-
+The default host is :code:`0.0.0.0` and the default port is :code:`5003`.

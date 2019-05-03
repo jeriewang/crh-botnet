@@ -4,7 +4,7 @@ from gpiozero import LED
 # This program works if and only if 2 robots are connected
 
 robot = Robot()
-robot.network.set_server_address('choate-robotics-rpi-01.local:5003')
+robot.network.set_server_address('choate-robotics-rpi-01.local')
 
 led = LED(17)
 

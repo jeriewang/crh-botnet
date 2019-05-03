@@ -2,7 +2,7 @@ from crh_botnet import *
 from gpiozero import LED
 
 robot = Robot()
-robot.network.set_server_address('choate-robotics-rpi-01.local:5003')
+robot.network.set_server_address('choate-robotics-rpi-01.local')
 
 led = LED(17)
 

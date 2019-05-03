@@ -15,13 +15,23 @@ All you need to do is to wrap your code inside
 
     from crh_botnet import *
 
-    robot=Robot(0) # replace the 0 with the actual id of your robot
+    robot=Robot()
+    robot.network.set_server_address("choate-robotics-rpi-01.local")
+    # You should substitute this with the actual addresses,
+    # which should include the port number if necessary
 
     def setup():
+        print("Robot started.")
+        if robot.network.connected:
+            print("Connected to the robot network")
+        else:
+            print("Running under offline mode")
+
         # your code goes into here
 
     def loop():
         # your code goes into here
+        # you can delete this function if nothing would go inside
 
     robot.run(globals())
 
