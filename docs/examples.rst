@@ -3,6 +3,15 @@
 Examples
 ========
 
+For all examples, it is assumed that the server is ran with
+
+.. code-block:: bash
+
+    sudo python3.7 -m crh_botnet.server -p 80
+
+and that it is addressed with :code:`choate-robotics-rpi-01.local`. Please
+adjust as necessary.
+
 Say Hi To Another Robot
 -----------------------
 
