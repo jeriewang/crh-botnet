@@ -61,7 +61,7 @@ class RobotNetwork:
         :return: None
         """
         
-        fut = asyncio.ensure_future(self.coro.send(msg, recipient))
+        fut = asyncio.run_coroutine_threadsafe(self.coro.send(msg, recipient),self._robot._event_loop)
         if callback is not None:
             def cb(fut):
                 try:
@@ -90,7 +90,7 @@ class RobotNetwork:
         :type msg: str or Message
         :return: None
         """
-        asyncio.ensure_future(self.coro.broadcast(msg))
+        asyncio.run_coroutine_threadsafe(self.coro.broadcast(msg),self._robot._event_loop)
     
     def disconnect(self):
         """
