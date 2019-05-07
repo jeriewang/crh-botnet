@@ -1,4 +1,4 @@
-import asyncio, inspect, textwrap, traceback, sys, socket, re, signal
+import asyncio, inspect, textwrap, traceback, sys, socket, re, signal, os
 from typing import Union
 from .network import RobotNetwork
 
@@ -217,6 +217,12 @@ class Robot:
                 if not self._ignore_exceptions:
                     self.shutdown(1)
     
+    def __getattr__(self, item):
+        try:
+            return getattr(self.network,item)
+        except AttributeError:
+            raise AttributeError("The robot does not have attribute %s.",item)
+    
     async def _shutdown(self):
         """
         Cleanup handler. This function should be called only once.
@@ -265,12 +271,21 @@ class Robot:
 
     def shutdown(self,exit_code=0):
         """
-        Shutdown the program.
+        Shutdown the robot cleanly.
         :param int exit_code: Optional. Program exit code (if you don't know \
-        what it is, leave it to the default value)
+        what it is, leave it to the default value.)
         :return: None
         """
         self._should_stop.set()
         self._event_loop.stop()
         self._exit_code=exit_code
 
+    def emergency_shutdown(self,exit_code=1):
+        """
+        Shutdown the robot immediately. All pending tasks will be discarded.
+        :param int exit_code: Optional. Program exit code (if you don't know \
+        what it is, leave it to the default value.)
+        :return: None
+        """
+        os._exit(exit_code)
+        
