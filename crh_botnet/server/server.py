@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, make_response, g, jsonify
 from werkzeug.serving import WSGIRequestHandler
-from datetime import datetime
+from datetime import datetime,timedelta
 import os, sqlite3, secrets, re
 from crh_botnet.message import Message
 
@@ -61,11 +61,10 @@ def close_db(e=None):
 def connect():
     try:
         #print(request.get_json())
-        print(request.get_data())
         robot_id = int(request.json['id'])
         db = get_db()
         c = db.cursor()
-        print(robot_id)
+        c.execute('DELETE FROM robots WHERE id=? AND last_seen<?',(robot_id,datetime.now()-timedelta(seconds=30)))
         c.execute('SELECT * FROM robots WHERE id=?', (robot_id,))
         if c.fetchone():
             return 'A robot with the same id is connected', 403
