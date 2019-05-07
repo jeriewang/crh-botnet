@@ -3,13 +3,13 @@
 Examples
 ========
 
-For all examples, it is assumed that the server is ran with
+For all the examples here, it is assumed that the server is ran with
 
 .. code-block:: bash
 
     sudo python3.7 -m crh_botnet.server -p 80
 
-and that it is addressed with :code:`choate-robotics-rpi-01.local`. Please
+and that it is addressable by :code:`choate-robotics-rpi-01.local`. Please
 adjust as necessary.
 
 Say Hi To Another Robot
@@ -47,3 +47,37 @@ robots.
 The reason for the re-fetch at line 20 is that the robot will keep updating
 the list of connected robots during a sleep, and it may change during that
 0.5 seconds if another robot joined the network.
+
+Simple Remotely Controlled Robot
+--------------------------------
+
+This example implements a simple control system with two Raspberry Pi's. One
+RPi is mounted on a robot, connected to motors with an H-Bridge (the robot), while
+the other is connected to only a button (the controller).
+
+The code on the controller is pretty simple
+
+.. literalinclude:: examples/button_control_controller.py
+
+There is nothing fancy in this code. The usage of :func:`~functools.partial` is
+to wrap it into a callable, as required by :attr:`~gpiozero.Button.when_pressed`
+and :attr:`~gpiozero.Button.when_released` attributes. It is the equivalent of
+
+.. code-block::
+
+    def send_on_wrapper():
+        robot.network.send('on',0)
+
+    def send_off_wrapper():
+        robot.network.send('off',0)
+
+    button.when_pressed = send_on_wrapper
+    button.when_released = send_off_wrapper
+
+This code assumes the ID of the robot is 0. In the case that the ID of the
+robot is unknown, you should consider using :meth:`~crh_botnet.network.RobotNetwork.broadcast`.
+
+The code on the robot side looks slightly more complicated, but the most of it
+is initializing the H-Bridge. The rest of them should be pretty self-explanatory.
+
+.. literalinclude:: examples/button_controls_drive.py
