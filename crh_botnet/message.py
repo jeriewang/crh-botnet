@@ -1,4 +1,4 @@
-import time, json,datetime
+import time, json, datetime
 
 
 class Message:
@@ -61,13 +61,13 @@ class Message:
         :return: The message.
         :rtype: Message
         """
-    
+        
         msg = Message(str(d['content']))
         msg.set_recipient(int(d['recipient']))
         msg.set_sender(int(d['sender']))
         msg.time_created = datetime.datetime.utcfromtimestamp(float(d['time_created']))
         return msg
-
+    
     @classmethod
     def from_db_record(cls, record):
         """
@@ -77,13 +77,12 @@ class Message:
         :rtype: Message
         """
         
-        msg=cls(record['content'])
+        msg = cls(record['content'])
         msg.set_sender(record['sender'])
         msg.set_recipient(record['recipient'])
-        msg.time_created=record['time_created']
+        msg.time_created = record['time_created']
         
         return msg
-        
     
     def to_json(self):
         """
@@ -101,7 +100,7 @@ class Message:
             'recipient'   : self.recipient,
             'time_created': self.time_created.timestamp()
         })
-
+    
     def to_dict(self):
         """
         :return: The message as a JSON serializable dict.
@@ -111,14 +110,13 @@ class Message:
             raise ValueError('Message recipient cannot be None')
         if self.sender is None:
             raise ValueError('Message sender cannot be None')
-    
+        
         return {
             'content'     : self.content,
             'sender'      : self.sender,
             'recipient'   : self.recipient,
             'time_created': self.time_created.timestamp()
         }
-    
     
     def validate(self):
         """
@@ -130,15 +128,15 @@ class Message:
     
     def __eq__(self, other):
         if isinstance(other, Message):
-           return self.content == other.content and \
-           self.sender == other.sender and \
-           self.time_created == other.time_created and\
-           self.recipient == other.recipient
+            return self.content == other.content and \
+                   self.sender == other.sender and \
+                   self.time_created == other.time_created and \
+                   self.recipient == other.recipient
         
-        if isinstance(other,str):
-            return self.content==other
+        if isinstance(other, str):
+            return self.content == other
         
-        raise TypeError("A message cannot be compared with type %s"%type(other))
+        raise TypeError("A message cannot be compared with type %s" % type(other))
     
     def __str__(self):
         return self.content
