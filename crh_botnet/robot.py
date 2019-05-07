@@ -9,7 +9,7 @@ class Robot:
         self.network = RobotNetwork(self)
         self.id = None
     
-    def run(self, namespace: dict, id:int=None, looping_interval: float = 0.05, ignore_exceptions=False, offline=False, debug=False):
+    def run(self, namespace: dict, id: int = None, looping_interval: float = 0.05, ignore_exceptions=False, offline=False, debug=False):
         """
         Runs the main event loop. This function must be called only once.
         It should be placed on the last line of the robot's script because
@@ -39,7 +39,7 @@ class Robot:
         False.
         """
         if offline:
-            self.id=0
+            self.id = 0
         else:
             hostname = socket.gethostname()
             match = re.fullmatch(r'^choate-robotics-rpi-(\d{2})$', hostname)
@@ -50,19 +50,19 @@ class Robot:
                     self.id = id
                 else:
                     raise ValueError("ID cannot be calculated. Please specify an ID.")
-
+        
         self._event_loop = asyncio.get_event_loop()
         self._event_loop.set_exception_handler(self._exception_handler)
         self._should_stop = asyncio.Event()
         self._exit_code = 0
         self._ignore_exceptions = False
-        self._debug=debug
+        self._debug = debug
         
         self.__globals = namespace
         self._looping_interval = looping_interval
-        self._ignore_exceptions=ignore_exceptions
+        self._ignore_exceptions = ignore_exceptions
         
-        signal.signal(signal.SIGTERM,self._signal_handler)
+        signal.signal(signal.SIGTERM, self._signal_handler)
         signal.signal(signal.SIGINT, self._signal_handler)
         signal.signal(signal.SIGQUIT, self._signal_handler)
         
@@ -92,13 +92,12 @@ class Robot:
             try:
                 self._event_loop.run_until_complete(self._shutdown())
             finally:
-                try: # retrieve all CancelledError
+                try:  # retrieve all CancelledError
                     self._event_loop.run_until_complete(asyncio.gather(*asyncio.Task.all_tasks()))
                 except asyncio.CancelledError:
                     pass
                 self._event_loop.close()
                 sys.exit(self._exit_code)
-    
     
     def set_looping_interval(self, interval: float) -> None:
         """
@@ -111,7 +110,7 @@ class Robot:
         self._looping_interval = interval
     
     async def _poll(self):
-        is_handler_async=asyncio.iscoroutinefunction(self._on_message)
+        is_handler_async = asyncio.iscoroutinefunction(self._on_message)
         while True:
             if self._should_stop.is_set():
                 return
@@ -138,10 +137,10 @@ class Robot:
                 self.shutdown(1)
             except:
                 if self._debug:
-                    print('Error polling:',file=sys.stderr)
-                    print(traceback.format_exc(),file=sys.stderr)
+                    print('Error polling:', file=sys.stderr)
+                    print(traceback.format_exc(), file=sys.stderr)
                 else:
-                    print('Error Polling',file=sys.stderr)
+                    print('Error Polling', file=sys.stderr)
                 # TODO: Handle specific connection errors
             finally:
                 await asyncio.sleep(0.2)
@@ -177,7 +176,7 @@ class Robot:
     def _run_loop(self):
         if self._should_stop.is_set():
             return
-        if self._looping_interval>0:
+        if self._looping_interval > 0:
             self._event_loop.call_later(self._looping_interval, self._run_loop)
         else:
             self._event_loop.call_soon(self._run_loop)
@@ -200,7 +199,7 @@ class Robot:
             if self._should_stop.is_set():
                 return
             try:
-                if self._looping_interval>0:
+                if self._looping_interval > 0:
                     await asyncio.sleep(self._looping_interval)
                 await self._loop()
             except asyncio.CancelledError:
@@ -217,11 +216,13 @@ class Robot:
                 if not self._ignore_exceptions:
                     self.shutdown(1)
     
-    def __getattr__(self, item):
+    def __getattr__(self, item: str):
+        if item.startswith('_'):  # Don't expose private variables
+            raise AttributeError("The robot does not have attribute %s.", item)
         try:
-            return getattr(self.network,item)
+            return getattr(self.network, item)
         except AttributeError:
-            raise AttributeError("The robot does not have attribute %s.",item)
+            raise AttributeError("The robot does not have attribute %s.", item)
     
     async def _shutdown(self):
         """
@@ -229,9 +230,9 @@ class Robot:
         """
         
         self._should_stop.set()
-        current=asyncio.current_task() # so it doesn't cancel itself
+        current = asyncio.current_task()  # so it doesn't cancel itself
         for task in asyncio.Task.all_tasks():
-            if task!=current:
+            if task != current:
                 task.cancel()
         try:
             if asyncio.iscoroutinefunction(self._on_shutdown):
@@ -248,28 +249,28 @@ class Robot:
             for s in tbs.format()[1:]:
                 print(s, file=sys.stderr)
     
-    def _exception_handler(self,loop:asyncio.AbstractEventLoop,context:dict):
+    def _exception_handler(self, loop: asyncio.AbstractEventLoop, context: dict):
         """
         This function is intended for missed exceptions in random places.
         """
         try:
             if 'exception' in context:
-                exc=context['exception']
-                print('Uncaught exception %s'%exc,file=sys.stderr)
-                print(traceback.format_tb(exc.__traceback__),file=sys.stderr)
+                exc = context['exception']
+                print('Uncaught exception %s' % exc, file=sys.stderr)
+                print(traceback.format_tb(exc.__traceback__), file=sys.stderr)
                 if not self._ignore_exceptions:
                     self.shutdown(1)
             else:
-                print('Uncaught exception with unknown type ignored',file=sys.stderr)
+                print('Uncaught exception with unknown type ignored', file=sys.stderr)
         except:
-            print('Something went seriously wrong. Error in error handler.',file=sys.stderr)
-            print(context,file=sys.stderr)
-            print(traceback.format_exc(),file=sys.stderr)
-
-    def _signal_handler(self,signum, frame):
+            print('Something went seriously wrong. Error in error handler.', file=sys.stderr)
+            print(context, file=sys.stderr)
+            print(traceback.format_exc(), file=sys.stderr)
+    
+    def _signal_handler(self, signum, frame):
         self.shutdown(1)
-
-    def shutdown(self,exit_code=0):
+    
+    def shutdown(self, exit_code=0):
         """
         Shutdown the robot cleanly.
         :param int exit_code: Optional. Program exit code (if you don't know \
@@ -278,9 +279,9 @@ class Robot:
         """
         self._should_stop.set()
         self._event_loop.stop()
-        self._exit_code=exit_code
-
-    def emergency_shutdown(self,exit_code=1):
+        self._exit_code = exit_code
+    
+    def emergency_shutdown(self, exit_code=1):
         """
         Shutdown the robot immediately. All pending tasks will be discarded.
         :param int exit_code: Optional. Program exit code (if you don't know \
@@ -288,4 +289,3 @@ class Robot:
         :return: None
         """
         os._exit(exit_code)
-        

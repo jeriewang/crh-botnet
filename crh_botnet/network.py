@@ -1,4 +1,4 @@
-import asyncio, aiohttp, sys, requests,re
+import asyncio, aiohttp, sys, requests, re
 from .message import Message
 from typing import Union, List
 from types import FunctionType
@@ -61,7 +61,7 @@ class RobotNetwork:
         :return: None
         """
         
-        fut = asyncio.run_coroutine_threadsafe(self.coro.send(msg, recipient),self._robot._event_loop)
+        fut = asyncio.run_coroutine_threadsafe(self.coro.send(msg, recipient), self._robot._event_loop)
         if callback is not None:
             def cb(fut):
                 try:
@@ -90,7 +90,7 @@ class RobotNetwork:
         :type msg: str or Message
         :return: None
         """
-        asyncio.run_coroutine_threadsafe(self.coro.broadcast(msg),self._robot._event_loop)
+        asyncio.run_coroutine_threadsafe(self.coro.broadcast(msg), self._robot._event_loop)
     
     def disconnect(self):
         """
@@ -113,7 +113,7 @@ class RobotNetwork:
         if re.match(r'https?://.+', address):
             cls.SERVER_ADDR = address
         else:
-            cls.SERVER_ADDR='http://' + address
+            cls.SERVER_ADDR = 'http://' + address
 
 
 class AsyncMethodsWrapper:
