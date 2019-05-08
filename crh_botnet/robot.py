@@ -1,13 +1,27 @@
-import asyncio, inspect, textwrap, traceback, sys, socket, re, signal, os
+import asyncio, inspect, textwrap, traceback, sys, socket, re, signal, os, logging
 from typing import Union
 from .network import RobotNetwork
 
+def noop():pass
 
 class Robot:
-    
     def __init__(self):
         self.network = RobotNetwork(self)
         self.id = None
+        logger = logging.getLogger('Robot')
+        
+        file_handler = logging.FileHandler('/var/tmp/crh_botnet.log')
+        stream_handler = logging.StreamHandler()
+        
+        formatter = logging.Formatter('%(asctime)s.%(msecs).3d %(levelname)-5s    %(message)s', datefmt='%H:%M:%S')
+        
+        file_handler.setFormatter(formatter)
+        stream_handler.setFormatter(formatter)
+        
+        logger.addHandler(file_handler)
+        logger.addHandler(stream_handler)
+        logger.setLevel(logging.INFO)
+        self._logger = logger
     
     def run(self, namespace: dict, id: int = None, looping_interval: float = 0.05, ignore_exceptions=False, offline=False, debug=False):
         """
@@ -36,17 +50,27 @@ class Robot:
         if offline is set to True, the robot will not attempt to connect to the \
         network.
         :param bool debug: Whether to enable debugging mode or not, default to \
-        False.
+        False. This will enable the verbose mode, good to enable if you ever \
+        wonder what's going on inside the robot.
         """
+        if debug:
+            self._logger.setLevel(logging.DEBUG)
+        
+        self._logger.info('Initializing the robot...')
+        
         if offline:
+            self._logger.info('Running under offline mode.')
             self.id = 0
         else:
+            self._logger.debug("Attempting to deduct robot's ID from hostname...")
             hostname = socket.gethostname()
             match = re.fullmatch(r'^choate-robotics-rpi-(\d{2})$', hostname)
             if match:
                 self.id = int(match.group(1))
+                self._logger.debug("Calculated ID is %d."%self.id)
             else:
                 if isinstance(id, int):
+                    self._logger.debug("Cannot calculate ID. Using user supplied ID %d." % self.id)
                     self.id = id
                 else:
                     raise ValueError("ID cannot be calculated. Please specify an ID.")
@@ -66,37 +90,75 @@ class Robot:
         signal.signal(signal.SIGINT, self._signal_handler)
         signal.signal(signal.SIGQUIT, self._signal_handler)
         
-        self._setup = self.__globals.get('setup', lambda: None)
+        if 'setup' in self.__globals:
+            self._setup = self.__globals['setup']
+            self._logger.debug('Setup function collected from the user namespace.')
+        else:
+            self._setup=noop
+            self._logger.debug('Setup function not found in the user namespace. Using noop.')
+        
         if asyncio.iscoroutinefunction(self._setup):
             print('Setup function must not be async')
             sys.exit(1)
         if not offline:
+            self._logger.info('Attempting to connect to the RobotNetwork...')
             self.network.connect()
+            if self.network.is_connected:
+                self._logger.info('Connected to the network')
+        
+        self._logger.debug('Running setup.')
         self._run_setup()
         
-        self._on_message = self.__globals.get('on_message', lambda m: None)
-        self._on_shutdown = self.__globals.get('on_shutdown', lambda: None)
-        self._loop = self.__globals.get('loop', lambda: None)
+        if 'on_message' in self.__globals:
+            self._on_message = self.__globals['on_message']
+            self._logger.debug('Message handler collected from the user namespace.')
+        else:
+            self._on_message=noop
+            self._logger.debug("Message handler not found in the user namespace. Using noop.")
+        
+        if 'on_shutdown' in self.__globals:
+            self._on_shutdown = self.__globals['on_shutdown']
+            self._logger.debug('Shutdown handler collected from the user namespace.')
+        else:
+            self._on_shutdown=noop
+            self._logger.debug("Shutdown handler not found in the user namespace. Using noop.")
+        
+        if 'loop' in self.__globals:
+            self._loop = self.__globals['loop']
+            self._logger.debug('Loop function collected from the user namespace.')
+        else:
+            self._loop=noop
+            self._logger.debug("Loop function not found in the user namespace. Using noop.")
+        
         
         if asyncio.iscoroutinefunction(self._loop):
             asyncio.ensure_future(self._run_loop_async())
         else:
             self._event_loop.call_soon(self._run_loop)
+        
+        self._logger.debug('Loop runner scheduled.')
+        
         if not offline:
             asyncio.ensure_future(self._poll())
+            self._logger.debug('Polling scheduled.')
         
         try:
             self._event_loop.set_debug(self._debug)
+            self._logger.debug('Starting the event loop...')
             self._event_loop.run_forever()
         finally:
             try:
+                self._logger.debug("Running final cleanup.")
                 self._event_loop.run_until_complete(self._shutdown())
             finally:
                 try:  # retrieve all CancelledError
                     self._event_loop.run_until_complete(asyncio.gather(*asyncio.Task.all_tasks()))
                 except asyncio.CancelledError:
                     pass
+                self._logger.debug('Event loop closed.')
                 self._event_loop.close()
+                self._logger.debug("Robot exit.")
+                logging.shutdown()
                 sys.exit(self._exit_code)
     
     def set_looping_interval(self, interval: float) -> None:
@@ -115,8 +177,10 @@ class Robot:
             if self._should_stop.is_set():
                 return
             try:
+                self._logger.debug('Polling.')
                 msgs = await self.network.coro.poll()
                 for msg in msgs:
+                    self._logger.debug('Running message handler for %s'%repr(msg))
                     try:
                         if is_handler_async:
                             await self._on_message(msg)
@@ -171,16 +235,21 @@ class Robot:
             if not self._ignore_exceptions:
                 self.shutdown(1)
         
+        self._logger.debug('Variables injected into the user global namespace: %s'%' '.join(ns.keys()))
         self.__globals.update(ns)
     
     def _run_loop(self):
+        
         if self._should_stop.is_set():
             return
         if self._looping_interval > 0:
+            self._logger.debug('Next iteration of loop scheduled for %0.3fms later.'%(self._looping_interval*1000))
             self._event_loop.call_later(self._looping_interval, self._run_loop)
         else:
+            self._logger.debug('Next iteration of loop scheduled ASAP.')
             self._event_loop.call_soon(self._run_loop)
         try:
+            self._logger.debug('Running loop.')
             exec(self._loop.__code__, self.__globals)
         except KeyboardInterrupt:
             self.shutdown(1)
@@ -199,9 +268,11 @@ class Robot:
             if self._should_stop.is_set():
                 return
             try:
-                if self._looping_interval > 0:
-                    await asyncio.sleep(self._looping_interval)
+                self._logger.debug('Running loop.')
                 await self._loop()
+                if self._looping_interval > 0:
+                    self._logger.debug('Sleeping for %0.3fms.'%(self._looping_interval*1000))
+                    await asyncio.sleep(self._looping_interval)
             except asyncio.CancelledError:
                 raise
             except KeyboardInterrupt:
@@ -235,11 +306,13 @@ class Robot:
             if task != current:
                 task.cancel()
         try:
+            self._logger.debug('Running the shutdown handler.')
             if asyncio.iscoroutinefunction(self._on_shutdown):
                 await self._on_shutdown()
             else:
                 self._on_shutdown()
             if self.network.is_connected:
+                self._logger.debug('Disconnecting from the network.')
                 await self.network.coro.disconnect()
         except:
             sys.stdout.flush()
@@ -273,6 +346,7 @@ class Robot:
     def shutdown(self, exit_code=0):
         """
         Shutdown the robot cleanly.
+        
         :param int exit_code: Optional. Program exit code (if you don't know \
         what it is, leave it to the default value.)
         :return: None
@@ -284,8 +358,13 @@ class Robot:
     def emergency_shutdown(self, exit_code=1):
         """
         Shutdown the robot immediately. All pending tasks will be discarded.
+        
         :param int exit_code: Optional. Program exit code (if you don't know \
         what it is, leave it to the default value.)
         :return: None
         """
+        self._logger.critical('Emergency shutdown commenced. Abandoning all hopes.')
+        logging.shutdown()
         os._exit(exit_code)
+
+__all__=['Robot']
