@@ -8,7 +8,8 @@ def on_message(message: Message):
     if message.content == 'Hi':  # avoid infinite looping
         robot.network.send('Hi to you too', message.sender)
     else:
-        print("Robot",message.sender,"said",message.content)
+        print("Robot", message.sender, "said", message.content)
+
 
 def setup():
     robot.network.broadcast('Hi')
