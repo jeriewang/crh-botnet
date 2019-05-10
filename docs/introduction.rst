@@ -21,12 +21,6 @@ All you need to do is to wrap your code inside
     # which should include the port number if necessary
 
     def setup():
-        print("Robot started.")
-        if robot.network.connected:
-            print("Connected to the robot network")
-        else:
-            print("Running under offline mode")
-
         # your code goes into here
 
     def loop():
@@ -47,6 +41,27 @@ A few things should be noticed:
 #. The ``robot`` variable should be constructed before everything else.
 #. Nothing should be placed after :code:`robot.run(globals())`. Well, you could, they just won't be executed.
 #. You don't have to put anything into the :func:`loop()` and :func:`setup()` if you don't want to. In fact, they don't have to be defined at all.
+
+Running The Robot
+-----------------
+
+When running the robot, you can pass in several options. The most important ones are :code:`offline` and :code:`debug`.
+
+If don't have a server setup, you can ask the robot to run under offline mode.
+Of course, in this case, no network related function will work (and you will probably get a bunch of errors if you try to use them).
+
+.. code-block::
+
+    robot.run(globals(), offline=True)
+
+If you ever wonder what's going on in this library, setting :code:`debug` to :code:`True` is probably a good thing to do.
+
+.. code-block::
+
+    robot.run(globals(), debug=True)
+
+
+Refer to :meth:`robot.Robot.run` for more details.
 
 Collected Functions
 ===================

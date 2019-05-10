@@ -7,7 +7,6 @@ robot.network.set_server_address("choate-robotics-rpi-01.local")
 
 
 def setup():
-    print("Connected to the robot network")
     button = Button(15)
     button.when_pressed = partial(robot.network.send, 'on', 0)
     button.when_released = partial(robot.network.send, 'off', 0)
