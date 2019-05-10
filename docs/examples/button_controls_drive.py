@@ -15,7 +15,6 @@ H_right_2 = gpiozero.DigitalOutputDevice(20)
 
 
 def setup():
-    print("Connected to the robot network")
     H_left_1.on()
     H_right_1.on()
 

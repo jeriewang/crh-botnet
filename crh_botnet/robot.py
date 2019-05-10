@@ -42,13 +42,13 @@ class Robot:
         :param bool ignore_exceptions: Whether or not the robot should continue \
         running if an exception occurs when the loop is running. Note that it\
         does not mean the program will continue executing the next line, but\
-        will run the next iteration of loop instead. Defaults to :code:`False`.\
+        will run the next iteration of the loop instead. Defaults to :code:`False`.\
         It is dangerous to enable and use only if you are confident that your\
         program can recover from unhandled exceptions. Regardless of this value,\
         KeyboardInterrupt (ctrl-c) will always shutdown the robot.
         :param bool offline: Whether the robot should operate offline. That is,\
         if offline is set to True, the robot will not attempt to connect to the \
-        network.
+        network. You also don't have to supply a robot ID if this is set to True.
         :param bool debug: Whether to enable debugging mode or not, default to \
         False. This will enable the verbose mode, good to enable if you ever \
         wonder what's going on inside the robot.
