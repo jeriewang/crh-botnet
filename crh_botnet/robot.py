@@ -70,7 +70,7 @@ class Robot:
                 self._logger.debug("Calculated ID is %d."%self.id)
             else:
                 if isinstance(id, int):
-                    self._logger.debug("Cannot calculate ID. Using user supplied ID %d." % self.id)
+                    self._logger.debug("Cannot calculate ID. Using user supplied ID %d." % id)
                     self.id = id
                 else:
                     raise ValueError("ID cannot be calculated. Please specify an ID.")
