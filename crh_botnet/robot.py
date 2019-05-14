@@ -2,7 +2,9 @@ import asyncio, inspect, textwrap, traceback, sys, socket, re, signal, os, loggi
 from typing import Union
 from .network import RobotNetwork
 
-def noop():pass
+
+def noop(): pass
+
 
 class Robot:
     def __init__(self):
@@ -67,7 +69,7 @@ class Robot:
             match = re.fullmatch(r'^choate-robotics-rpi-(\d{2})$', hostname)
             if match:
                 self.id = int(match.group(1))
-                self._logger.debug("Calculated ID is %d."%self.id)
+                self._logger.debug("Calculated ID is %d." % self.id)
             else:
                 if isinstance(id, int):
                     self._logger.debug("Cannot calculate ID. Using user supplied ID %d." % id)
@@ -94,7 +96,7 @@ class Robot:
             self._setup = self.__globals['setup']
             self._logger.debug('Setup function collected from the user namespace.')
         else:
-            self._setup=noop
+            self._setup = noop
             self._logger.debug('Setup function not found in the user namespace. Using noop.')
         
         if asyncio.iscoroutinefunction(self._setup):
@@ -113,23 +115,22 @@ class Robot:
             self._on_message = self.__globals['on_message']
             self._logger.debug('Message handler collected from the user namespace.')
         else:
-            self._on_message=noop
+            self._on_message = noop
             self._logger.debug("Message handler not found in the user namespace. Using noop.")
         
         if 'on_shutdown' in self.__globals:
             self._on_shutdown = self.__globals['on_shutdown']
             self._logger.debug('Shutdown handler collected from the user namespace.')
         else:
-            self._on_shutdown=noop
+            self._on_shutdown = noop
             self._logger.debug("Shutdown handler not found in the user namespace. Using noop.")
         
         if 'loop' in self.__globals:
             self._loop = self.__globals['loop']
             self._logger.debug('Loop function collected from the user namespace.')
         else:
-            self._loop=noop
+            self._loop = noop
             self._logger.debug("Loop function not found in the user namespace. Using noop.")
-        
         
         if asyncio.iscoroutinefunction(self._loop):
             asyncio.ensure_future(self._run_loop_async())
@@ -180,7 +181,7 @@ class Robot:
                 self._logger.debug('Polling.')
                 msgs = await self.network.coro.poll()
                 for msg in msgs:
-                    self._logger.debug('Running message handler for %s'%repr(msg))
+                    self._logger.debug('Running message handler for %s' % repr(msg))
                     try:
                         if is_handler_async:
                             await self._on_message(msg)
@@ -235,15 +236,14 @@ class Robot:
             if not self._ignore_exceptions:
                 self.shutdown(1)
         
-        self._logger.debug('Variables injected into the user global namespace: %s'%' '.join(ns.keys()))
+        self._logger.debug('Variables injected into the user global namespace: %s' % ' '.join(ns.keys()))
         self.__globals.update(ns)
     
     def _run_loop(self):
-        
         if self._should_stop.is_set():
             return
         if self._looping_interval > 0:
-            self._logger.debug('Next iteration of loop scheduled for %0.3fms later.'%(self._looping_interval*1000))
+            self._logger.debug('Next iteration of loop scheduled for %0.3fms later.' % (self._looping_interval * 1000))
             self._event_loop.call_later(self._looping_interval, self._run_loop)
         else:
             self._logger.debug('Next iteration of loop scheduled ASAP.')
@@ -271,7 +271,7 @@ class Robot:
                 self._logger.debug('Running loop.')
                 await self._loop()
                 if self._looping_interval > 0:
-                    self._logger.debug('Sleeping for %0.3fms.'%(self._looping_interval*1000))
+                    self._logger.debug('Sleeping for %0.3fms.' % (self._looping_interval * 1000))
                     await asyncio.sleep(self._looping_interval)
             except asyncio.CancelledError:
                 raise
@@ -367,4 +367,5 @@ class Robot:
         logging.shutdown()
         os._exit(exit_code)
 
-__all__=['Robot']
+
+__all__ = ['Robot']
