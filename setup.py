@@ -14,7 +14,8 @@ setup(
         install_requires=[
             'aiohttp',
             'requests',
-            'flask'
+            'flask',
+            'gpiozero'
         ],
         long_description=open('README.md').read()
 )
