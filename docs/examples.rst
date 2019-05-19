@@ -90,7 +90,9 @@ HBridge Drive
 
 *Added in version 0.2.0*
 
-A simple code for using :class:`~drive.HBridgeDrive` class.
+A simple code for using :class:`~crh_botnet.drive.HBridgeDrive` class. Offline
+is set to True here because this code does not involve the use of network and
+it's not necessary to connect to the network.
 
 .. literalinclude:: examples/h_bridge_drive.py
 
@@ -98,5 +100,5 @@ An alternative code (which makes it look more elegant) is
 
 .. literalinclude:: examples/h_bridge_drive_alt.py
 
-As the :meth:`drive.HBridgeDrive.__call__` function is just a convenience wrapper
-around :meth:`drive.HBridgeDrive.drive`.
+As the :meth:`~crh_botnet.drive.HBridgeDrive.__call__` function is just a convenience wrapper
+around the :meth:`~crh_botnet.drive.HBridgeDrive.drive` function.
