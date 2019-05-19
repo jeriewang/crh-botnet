@@ -90,15 +90,17 @@ HBridge Drive
 
 *Added in version 0.2.0*
 
-A simple code for using :class:`~crh_botnet.drive.HBridgeDrive` class. Offline
+A simple code for using the :class:`~crh_botnet.drive.HBridgeDrive` class. Offline
 is set to True here because this code does not involve the use of network and
-it's not necessary to connect to the network.
+it's not necessary to connect to the network. The ``reverse_left`` and ``reverse_right``
+keyword arguments are purely dependent on your wiring only and you don't have to
+set any of them.
 
 .. literalinclude:: examples/h_bridge_drive.py
 
-An alternative code (which makes it look more elegant) is
+An alternative code (which makes it look a lot more elegant and slightly more confusing) is
 
 .. literalinclude:: examples/h_bridge_drive_alt.py
 
-As the :meth:`~crh_botnet.drive.HBridgeDrive.__call__` function is just a convenience wrapper
+It works because the :meth:`~crh_botnet.drive.HBridgeDrive.__call__` function is just a convenience wrapper
 around the :meth:`~crh_botnet.drive.HBridgeDrive.drive` function.
