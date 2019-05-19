@@ -8,3 +8,6 @@ The Drive Module
     :members:
 
     .. automethod:: __init__
+    .. automethod:: __call__
+
+An example can be found at :ref:`hbridge`.
