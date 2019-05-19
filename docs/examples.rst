@@ -81,3 +81,22 @@ The code on the robot side looks slightly more complicated, but the most of it
 is initializing the H-Bridge. The rest of them should be pretty self-explanatory.
 
 .. literalinclude:: examples/button_controls_drive.py
+
+
+.. _hbridge:
+
+HBridge Drive
+-------------
+
+*Added in version 0.2.0*
+
+A simple code for using :class:`~drive.HBridgeDrive` class.
+
+.. literalinclude:: examples/h_bridge_drive.py
+
+An alternative code (which makes it look more elegant) is
+
+.. literalinclude:: examples/h_bridge_drive_alt.py
+
+As the :meth:`drive.HBridgeDrive.__call__` function is just a convenience wrapper
+around :meth:`drive.HBridgeDrive.drive`.
