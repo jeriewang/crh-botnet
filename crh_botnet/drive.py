@@ -10,11 +10,12 @@ class HBridgeDrive:
         :param int right_ground: The GND pin for the right motor
         :param int right_power: The VCC pin for the right motor
         :param int right_enable: The EN pin for the right motor
-        :param bool reverse_left: Reverse the direction of left motor
-        :param bool reverse_right: Reverse the direction of right motor
+        :param bool reverse_left: Reverse the direction of left motor. Default to False.
+        :param bool reverse_right: Reverse the direction of right motor. Default to False.
         """
         from gpiozero import PWMOutputDevice, DigitalOutputDevice
-        # import  inside the function so devices without GPIO pins won't have error when importing everything
+        # import inside the function so devices without GPIO pins won't have
+        # an error when importing everything
         
         if reverse_left:
             self.left_power = DigitalOutputDevice(left_ground)
@@ -69,9 +70,24 @@ class HBridgeDrive:
         self.right_enable.value = abs(power_right)
     
     def stop(self):
+        """
+        A convenient function to Stop both motors. Equivalent to :code:`drive(0,0)`
+        
+        :return: None
+        """
         self.left_enable.value = 0
         self.right_enable.value = 0
         self.left_power.off()
         self.left_ground.off()
         self.right_power.off()
         self.right_ground.off()
+
+    def __call__(self, left, right):
+        """
+        Convenience function for :meth:`drive`
+        
+        :param float left: Power to the left motor, in range [-1,1]
+        :param float right: Power to the right motor, in range [-1,1]
+        :return: None
+        """
+        self.drive(left,right)
