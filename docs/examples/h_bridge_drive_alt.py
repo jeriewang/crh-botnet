@@ -9,4 +9,4 @@ def loop():
     robot.drive(1, 1)
 
 
-robot.run(globals(), offline=True, debug=True)
+robot.run(globals(), offline=True)
