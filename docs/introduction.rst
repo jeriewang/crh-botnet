@@ -73,7 +73,7 @@ Collected Functions
     interchangeably. If you don't know what it is, you can read section
     :ref:`async_funcs` for a quick introduction.
 
-When :func:`Robot.run` is called, the following functions will be collected
+When :meth:`~crh_botnet.robot.Robot.run` is called, the following functions will be collected
 (from the namespace passed to run):
 
 - :func:`setup`
