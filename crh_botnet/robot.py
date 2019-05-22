@@ -3,7 +3,7 @@ from typing import Union
 from .network import RobotNetwork
 
 
-def noop(): pass
+def noop(*args,**kwargs): pass
 
 
 class Robot:
@@ -148,6 +148,7 @@ class Robot:
             self._logger.debug('Starting the event loop...')
             self._event_loop.run_forever()
         finally:
+            self._logger.info("Shutting down the robot...")
             try:
                 self._logger.debug("Running final cleanup.")
                 self._event_loop.run_until_complete(self._shutdown())
