@@ -170,7 +170,8 @@ class AsyncMethodsWrapper:
     
     async def broadcast(self, msg):
         """
-        This function is a a coroutine. Broadcast a message to the entire robot network
+        This function is a a coroutine. Broadcast a message to the entire robot network.
+        
         :param msg: The message for broadcasting
         :type msg: Message or str
         :return: The message object broadcast (for callback purpose)
