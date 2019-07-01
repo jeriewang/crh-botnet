@@ -3,7 +3,7 @@ from typing import Union
 from .network import RobotNetwork
 
 
-def noop(*args,**kwargs): pass
+def noop(*args, **kwargs): pass
 
 
 class Robot:
@@ -25,7 +25,7 @@ class Robot:
         logger.setLevel(logging.INFO)
         self._logger = logger
     
-    def run(self, namespace: dict, id: int = None, looping_interval: float = 0.05, ignore_exceptions=False, offline=False, debug=False):
+    def run(self, namespace: dict, id: int = None, looping_interval: float = 0.05, *, ignore_exceptions=False, offline=False, debug=False):
         """
         Runs the main event loop. This function must be called only once.
         It should be placed on the last line of the robot's script because
@@ -179,10 +179,10 @@ class Robot:
             if self._should_stop.is_set():
                 return
             try:
-                self._logger.debug('Polling.')
+                self._logger.debug('Polling....')
                 msgs = await self.network.coro.poll()
                 for msg in msgs:
-                    self._logger.debug('Running message handler for %s' % repr(msg))
+                    self._logger.debug('Running message handler for %s...' % repr(msg))
                     try:
                         if is_handler_async:
                             await self._on_message(msg)

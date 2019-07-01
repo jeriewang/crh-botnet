@@ -2,7 +2,7 @@ import asyncio, aiohttp, sys, requests, re
 from .message import Message
 from typing import Union, List
 from types import FunctionType
-
+import traceback
 
 class RobotNetwork:
     """
@@ -62,12 +62,13 @@ class RobotNetwork:
         """
         
         fut = asyncio.run_coroutine_threadsafe(self.coro.send(msg, recipient), self._robot._event_loop)
+        self._robot._logger.debug(f'Sending message "{str(msg)}" to robot {recipient} was scheduled.')
         if callback is not None:
             def cb(fut):
                 try:
                     res = fut.result()
                 except Exception:
-                    print(f'Sending message {msg} failed with exception {Exception}. Retrying...', file=sys.stderr)
+                    self._robot._logger.warning(f'Sending message {msg} failed failed {traceback.format_exc()}.\n Retrying...')
                     self.send(msg, recipient)  # Try again
                     return
                 
@@ -77,7 +78,7 @@ class RobotNetwork:
                 try:
                     fut.result()
                 except Exception:
-                    print(f'Sending message {msg} failed with exception {Exception}. Retrying...', file=sys.stderr)
+                    print(f'Sending message {msg} failed {traceback.format_exc()}.\n Retrying...')
                     self.send(msg, recipient)  # Try again
         
         fut.add_done_callback(cb)
@@ -91,6 +92,7 @@ class RobotNetwork:
         :return: None
         """
         asyncio.run_coroutine_threadsafe(self.coro.broadcast(msg), self._robot._event_loop)
+        self._robot._logger.debug(f'Broadcasting message "{str(msg)}" was scheduled.')
     
     def disconnect(self):
         """
@@ -165,7 +167,9 @@ class AsyncMethodsWrapper:
         assert isinstance(msg, Message)
         msg.set_recipient(recipient)
         msg.set_sender(self._network._robot.id)
+        self._network._robot._logger.debug(f'Sending message "{msg.content}" to robot {msg.recipient}...')
         await self._session.put(self._network.SERVER_ADDR + '/api/send', json=msg.to_dict())
+        self._network._robot._logger.debug(f'Message "{msg.content}" to robot {msg.recipient} was sent.')
         return msg
     
     async def broadcast(self, msg):
@@ -185,7 +189,9 @@ class AsyncMethodsWrapper:
         assert isinstance(msg, Message)
         msg.set_recipient(-1)
         msg.set_sender(self._network._robot.id)
+        self._network._robot._logger.debug(f'Broadcasting message "{msg.content}" to the network...')
         await self._session.put(self._network.SERVER_ADDR + '/api/send', json=msg.to_dict())
+        self._network._robot._logger.debug(f'Message "{msg.content}" was broadcast.')
         return msg
     
     async def disconnect(self):
