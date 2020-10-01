@@ -5,10 +5,10 @@ setup(
         name='crh-botnet',
         version=__version__,
         packages=['crh_botnet', 'crh_botnet.server'],
-        url='https://docs.jerrywang.website/crh-botnet/',
+        url='https://docs.jerie.wang/crh-botnet/',
         license=__license__,
         author=__author__,
-        author_email='yrrejkk@gmail.com',
+        author_email='mail@jerie.wang',
         description='A Robot Networking Library',
         python_requires='>=3.6',
         install_requires=[

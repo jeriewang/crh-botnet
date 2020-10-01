@@ -1,6 +1,6 @@
 # CRH BotNet
 
-A complete documentation can be found [here](https://docs.jerrywang.website/crh-botnet/).
+A complete documentation can be found [here](https://docs.jerie.wang/crh-botnet/).
 
 ## Installation
 

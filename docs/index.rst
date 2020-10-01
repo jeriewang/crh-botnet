@@ -2,7 +2,7 @@
 CRH BotNet Documentation
 ========================
 
-:Author: Jerry Wang
+:Author: Jerie Wang
 :Date: April 2019
 
 This package is developed for classroom purpose for Autonomous Robotics (CS570HO) class at Choate Rosemary Hall. It is intended to simulate an Arduino environment while enabling robots communicating with each other via the Internet (or the LAN).
@@ -34,7 +34,7 @@ or from source
 
 .. code-block:: bash
 
-    git clone https://github.com/pkqxdd/crh-botnet.git
+    git clone https://github.com/jeriewang/crh-botnet.git
     cd crh-botnet
     python3.7 setup.py install
 

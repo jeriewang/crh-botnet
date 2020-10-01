@@ -7,8 +7,8 @@ from crh_botnet import __version__
 # -- Project information -----------------------------------------------------
 
 project = 'CRH BotNet'
-copyright = '2019, Jerry Wang'
-author = 'Jerry Wang'
+copyright = '2019, Jerie Wang'
+author = 'Jerie Wang'
 release = __version__
 
 # -- General configuration ---------------------------------------------------
@@ -30,15 +30,15 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 html_theme = 'alabaster'
 html_theme_options = {
     'show_powered_by': False,
-    'canonical_url'  : 'docs.jerrywang.website/crh-botnet/',
+    'canonical_url'  : 'docs.jerie.wang/crh-botnet/',
     'analytics_id'   : 'UA-115911413-2',
-    'github_user'    : 'pkqxdd',
+    'github_user'    : 'jeriewang',
     'github_repo'    : 'crh-botnet',
     'github_button'  : 'true',
     'github_type'    : 'star',
     'github_count'   : 'false'
 }
-html_baseurl = 'https://docs.jerrywang.website/crh-botnet/'
+html_baseurl = 'https://docs.jerie.wang/crh-botnet/'
 html_static_path = ['_static', '_static/custom.css']
 
 intersphinx_mapping = {
